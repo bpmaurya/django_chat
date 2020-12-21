@@ -4,16 +4,15 @@ from django.forms.widgets import EmailInput
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from .forms import SignUpForm
-from .forms import LoginForm,PostForm
+from .forms import LoginForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import Post, User
+from .models import User
 # Create your views here.
 
 
 def home(request):
-    posts = Post.objects.all()
-    return render(request, 'chat/home.html', {'posts': posts})
+    return render(request, 'chat/home.html')
 
 
 def about(request):
@@ -23,16 +22,6 @@ def about(request):
 def contact(request):
     return render(request, 'chat/contact.html')
 
-
-def dashboard(request):
-    if request.user.is_authenticated:
-        posts = Post.objects.all()
-        user = request.user
-        full_name = user.get_full_name()
-        gps = user.groups.all()
-        return render(request, 'chat/dashboard.html', {'posts': posts,'full_name':full_name,'groups':gps})
-    else:
-        return HttpResponseRedirect('/login/')
 
 
 def user_signup(request):
@@ -91,24 +80,9 @@ def add_post(request):
     else:
         return HttpResponseRedirect('/login/')
 
-# update post
 
 
-def update_post(request,id):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            pi = Post.objects.get(pk=id)
-            form = PostForm(request.POST,instance=pi)
-            if form.is_valid():
-                form.save()
-        else:
-            pi = Post.objects.get(pk=id)
-            form = PostForm(instance=pi)
-        return render(request, 'chat/updatepost.html',{'form':form})
-    else:
-        return HttpResponseRedirect('/login/')
 
-# delete post
 
 
 def delete_post(request,id):
